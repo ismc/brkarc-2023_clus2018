@@ -4,9 +4,6 @@
 [submodule "roles/network-dmvpn"]
 	path = roles/network-dmvpn
 	url = https://github.com/ismc/ansible-network-dmvpn.git
-[submodule "roles/network-backu"]
-	path = roles/network-backu
-	url = https://github.com/ismc/ansible-network-backup.git
 [submodule "roles/network-backup"]
 	path = roles/network-backup
 	url = https://github.com/ismc/ansible-network-backup.git
