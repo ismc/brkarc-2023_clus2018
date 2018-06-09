@@ -71,6 +71,8 @@ pipeline {
                         echo 'Updating Inventory...'
                         dir ('inventory') {
                             sshagent (credentials: ['scarter-jenkins_key']) {
+                                sh 'git config --global user.name "Jenkins"'
+                                sh 'git config --global user.email jenkins@ismc.io'
                                 sh 'git add *'
                                 sh 'git commit -am "Updated inventory on re-build"'
                                 sh 'git push origin HEAD:master --force'
