@@ -7,3 +7,6 @@
 [submodule "roles/network-backup"]
 	path = roles/network-backup
 	url = https://github.com/ismc/ansible-network-backup.git
+[submodule "roles/ansible-tower-api"]
+	path = roles/ansible-tower-api
+	url = https://github.com/ismc/ansible-tower-api.git
