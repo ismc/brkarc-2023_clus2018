@@ -42,6 +42,7 @@ pipeline {
                 ])
             }
         }
+/*
         stage('Destroy Testbed') {
             steps {
                 script {
@@ -58,6 +59,7 @@ pipeline {
                 }
             }
         }
+*/
         stage('Build Testbed') {
             steps {
                 echo 'Building Cloud...'
@@ -67,10 +69,12 @@ pipeline {
                 script {
                     try {
                         echo 'Updating Inventory...'
-                        sshagent (credentials: ['scarter-jenkins_key']) {
-                            sh 'git add *'
-                            sh 'git commit -am "Updated inventory on re-build"'
-                            sh 'git push origin HEAD:master --force'
+                        dir ('inventory') {
+                            sshagent (credentials: ['scarter-jenkins_key']) {
+                                sh 'git add *'
+                                sh 'git commit -am "Updated inventory on re-build"'
+                                sh 'git push origin HEAD:master --force'
+                            }
                         }
                     } catch (e) {
                             echo 'Unable to commit inventory'
