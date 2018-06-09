@@ -1,0 +1,12 @@
+[submodule "roles/ansible-tower-api"]
+	path = roles/ansible-tower-api
+	url = git@github.com:ismc/ansible-tower-api.git
+[submodule "roles/cloudbuilder"]
+	path = roles/cloudbuilder
+	url = git@github.com:ismc/ansible-cloudbuilder.git
+[submodule "roles/network-dmvpn"]
+	path = roles/network-dmvpn
+	url = git@github.com:ismc/ansible-network-dmvpn.git
+[submodule "roles/network-backup"]
+	path = roles/network-backup
+	url = git@github.com:ismc/ansible-network-backup.git
