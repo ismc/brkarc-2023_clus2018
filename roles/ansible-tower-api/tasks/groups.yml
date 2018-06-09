@@ -1,0 +1,58 @@
+- include_tasks: get-token.yml
+  when: tower_api_token is not defined
+
+- include_tasks: get-groups.yml
+  when: tower_api_group_map is not defined
+
+# - name: Get group {{ tower_api_group_name }}
+#   uri:
+#     url: "https://{{ tower_api_endpoint }}/api/v2/groups/?name={{ tower_api_group_name }}"
+#     method: GET
+#     headers:
+#       Authorization: "Token {{ tower_api_token }}"
+#     body_format: json
+#     validate_certs: "{{ validate_certs }}"
+#     return_content: yes
+#   ignore_errors: no
+#   register: get_result
+
+- block:
+    - name: Add group {{ tower_api_group_name }}
+      uri:
+        url: "https://{{ tower_api_endpoint }}/api/v2/groups/"
+        method: POST
+        headers:
+          Authorization: "Token {{ tower_api_token }}"
+        body:
+          name: "{{ tower_api_group_name }}"
+          inventory: "{{ tower_api_inventory_id }}"
+          # variables: "{{ tower_api_group_vars | to_json }}"
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+        return_content: yes
+        status_code: 201
+      register: post_result
+
+    - set_fact:
+        tower_api_group_map: "{{ tower_api_group_map | combine( { tower_api_group_name: post_result.json.id } ) }}"
+
+  when: tower_api_group_map[tower_api_group_name] is not defined
+
+- name: Add hosts to group {{ tower_api_group_name }}
+  uri:
+    url: "https://{{ tower_api_endpoint }}/api/v2/groups/{{ tower_api_group_map[tower_api_group_name] }}/hosts/"
+    method: POST
+    headers:
+      Authorization: "Token {{ tower_api_token }}"
+    body:
+      name: "{{ host_item }}"
+      # inventory: "{{ tower_api_inventory_id }}"
+    body_format: json
+    validate_certs: "{{ validate_certs }}"
+    return_content: yes
+    status_code: 204
+  register: post_result
+  with_items: "{{ tower_api_group_members }}"
+  when: tower_api_group_members is defined
+  loop_control:
+    loop_var: host_item

@@ -1,0 +1,38 @@
+- include_tasks: get-token.yml
+  when: tower_api_token is not defined
+
+- name: Get inventory {{ tower_api_inventory_name }}
+  uri:
+    url: "https://{{ tower_api_endpoint }}/api/v2/inventories/?name={{ tower_api_inventory_name }}"
+    method: GET
+    headers:
+      Authorization: "Token {{ tower_api_token }}"
+    body_format: json
+    validate_certs: "{{ validate_certs }}"
+    return_content: yes
+  ignore_errors: no
+  register: get_result
+
+- set_fact:
+    tower_api_inventory_id: "{{ get_result.json.results[0].id }}"
+  when: get_result.json.count > 0
+
+- block:
+  - name: Add inventory {{ tower_api_inventory_name }}
+    uri:
+      url: "https://{{ tower_api_endpoint }}/api/v2/inventories/"
+      method: POST
+      headers:
+        Authorization: "Token {{ tower_api_token }}"
+      body:
+        name: "{{ tower_api_inventory_name }}"
+        organization: "{{ tower_api_organization_name }}"
+      body_format: json
+      validate_certs: "{{ validate_certs }}"
+      return_content: yes
+      status_code: 201
+    register: uri_result
+
+  - set_fact:
+      tower_api_inventory_id: "{{ uri_result.json.id }}"
+  when: get_result.json.count == 0

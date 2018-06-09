@@ -1,0 +1,23 @@
+- include_tasks: get-token.yml
+  when: tower_api_token is not defined
+
+- name: Add user {{ tower_api_in_username }}
+  uri:
+    url: "https://{{ tower_api_endpoint }}/api/v2/users/"
+    method: POST
+    headers:
+      Authorization: "Token {{ tower_api_token }}"
+    body:
+      username: "{{ tower_api_in_username }}"
+      first_name: "{{ tower_api_in_first_name | default('') }}"
+      last_name: "{{ tower_api_in_last_name | default('') }}"
+      email: "{{ tower_api_in_email | default('') }}"
+      is_superuser: "{{ tower_api_in_superuser | default('false') }}"
+      is_system_auditor: "{{ tower_api_in_auditor | default('false') }}"
+      password: "{{ tower_api_in_password }}"
+    body_format: json
+    validate_certs: "{{ validate_certs }}"
+    return_content: yes
+    status_code: 201
+  register: post_result
+  failed_when: "'exists' not in post_result.content"
