@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - assert:
+        that:
+          - cloud_model is defined
+        msg: "You must specify a model, e.g. -e 'cloud_model=csr-lab1.yml'"
+
+    - set_fact:
+        cloud_provider: "{{ opt_provider_region.split('/')[0] }}"
+        cloud_region: "{{ opt_provider_region.split('/')[1] }}"
+      when: opt_provider_region is defined
+
+    - include_role:
+        name: cloudbuilder
+        tasks_from: build
+      tags:
+        - build
+
+    - include_role:
+        name: cloudbuilder
+        tasks_from: facts
+      tags:
+        - inventory
+
+    - debug: var=hostvars
+
+    - include_role:
+        name: cloudbuilder
+        tasks_from: inventory
+      tags:
+        - inventory
