@@ -1,0 +1,76 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    - validate_certs: no
+  tasks:
+    - assert:
+        that:
+          - cloud_model is defined
+        msg: "You must specify a model, e.g. -e 'cloud_model=csr-lab1.yml'"
+
+    - set_fact:
+        cloud_provider: "{{ opt_provider_region.split('/')[0] }}"
+        cloud_region: "{{ opt_provider_region.split('/')[1] }}"
+      when: opt_provider_region is defined
+
+    - set_fact:
+        host_interfaces_dict: {}
+        host_inventory_dict: {}
+        group_inventory_dict: {}
+        cloud_group_list: []
+      tags:
+        - facts
+
+    - include_role:
+        name: cloudbuilder
+        tasks_from: facts
+      tags:
+        - facts
+
+    - debug: var=cloud_instance_facts
+    - debug: var=host_interfaces_dict
+
+    - name: Build the list of groups
+      set_fact:
+        cloud_group_list: "{{ cloud_group_list + item.value.groups.split(',') }}"
+      with_dict: "{{ cloud_instance_facts }}"
+
+    - debug: var=cloud_group_list
+
+    - include_role:
+        name: ansible-tower-api
+        tasks_from: inventories
+      vars:
+        tower_api_inventory_name: "{{ cloud_project }}"
+      run_once: yes
+
+    - block:
+      - include_role:
+          name: ansible-tower-api
+          tasks_from: groups
+        vars:
+          validate_certs: no
+          tower_api_inventory_name: "{{ cloud_project }}"
+          tower_api_group_name: "{{ item }}"
+        with_items: "{{ cloud_group_list | unique }}"
+        when: item != 'all'
+      when: cloud_state == 'present'
+
+    - include_role:
+        name: ansible-tower-api
+        tasks_from: hosts
+      vars:
+        validate_certs: no
+        tower_api_inventory_name: "{{ cloud_project }}"
+        tower_api_host_name: "{{ item.key }}"
+        tower_api_host_groups: "{{ item.value.groups.split(',') }}"
+        tower_api_cloud_state: "{{ cloud_state }}"
+        tower_api_host_vars:
+          ansible_host: "{{ item.value.ansible_host }}"
+          ansible_user: "{{ item.value.ansible_user }}"
+          ansible_network_os: "{{ item.value.ansible_network_os | default(omit) }}"
+          ansible_connection: "{{ item.value.ansible_connection | default(omit) }}"
+          interfaces: "{{ cloud_interface_facts[item.key] }}"
+      with_dict: "{{ cloud_instance_facts }}"
