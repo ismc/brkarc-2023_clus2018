@@ -11,8 +11,6 @@ pipeline {
     }
     environment {
       ANSIBLE_INVENTORY_DIR = "${env.WORKSPACE}/inventory"
-      GIT_COMMITTER_NAME = 'scarter-jenkins'
-      GIT_COMMITTER_EMAIL = 'jenkins@ismc.io'
     }
     triggers {
       cron('H 2 * * 1-5')
@@ -42,7 +40,6 @@ pipeline {
                 ])
             }
         }
-/*
         stage('Destroy Testbed') {
             steps {
                 script {
@@ -59,7 +56,6 @@ pipeline {
                 }
             }
         }
-*/
         stage('Build Testbed') {
             steps {
                 echo 'Building Cloud...'
