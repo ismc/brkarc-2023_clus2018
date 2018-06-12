@@ -40,6 +40,7 @@ pipeline {
                 ])
             }
         }
+/*
         stage('Destroy Testbed') {
             steps {
                 script {
@@ -56,6 +57,7 @@ pipeline {
                 }
             }
         }
+*/
         stage('Build Testbed') {
             steps {
                 echo 'Building Cloud...'
