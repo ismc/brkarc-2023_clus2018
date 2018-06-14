@@ -1,5 +1,5 @@
 properties([[$class: 'HudsonNotificationProperty',
-    endpoints: [[buildNotes: '', urlInfo: [urlOrId: ' http://cisco-spark-integration-management-ext.cloudhub.io/api/hooks/8fde6043-69b6-11e8-bf37-06c25f4e7996', urlType: 'PUBLIC']]]
+    endpoints: [[buildNotes: '', urlInfo: [urlOrId: 'http://cisco-spark-integration-management-ext.cloudhub.io/api/hooks/f6b9ccc0-6b44-11e8-8665-0edc1bfa0c2e', urlType: 'PUBLIC']]]
 ]])
 pipeline {
     agent any
