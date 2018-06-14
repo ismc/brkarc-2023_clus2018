@@ -1,7 +1,0 @@
----
-dmvpn_network: 10.0.0.0/8
-dmvpn_tunnel_number: 1
-dmvpn_loopback_network: 10.255.1.0/24
-dmvpn_tunnel_network: 10.255.0.0/24
-dmvpn_preshared_key: kbNB2jtfKqBvQkzMTurL8RNvBJDEtuNp
-dmvpn_site_number: "{{ interfaces.0.ip.split('.')[1] | default('') }}"
